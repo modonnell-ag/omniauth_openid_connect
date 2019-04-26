@@ -23,11 +23,12 @@ module OmniAuth
         port: 443,
         authorization_endpoint: '/authorize',
         token_endpoint: '/token',
-        userinfo_endpoint: '/userinfo',
+        # userinfo_endpoint: '/userinfo',
         jwks_uri: '/jwk',
         end_session_endpoint: nil
       }
       option :issuer
+      option :resource
       option :discovery, false
       option :client_signing_alg
       option :client_jwk_signing_key
@@ -49,30 +50,30 @@ module OmniAuth
       option :post_logout_redirect_uri
       option :uid_field, 'sub'
 
-      def uid
-        user_info.public_send(options.uid_field.to_s)
-      rescue NoMethodError
-        log :warn, "User sub:#{user_info.sub} missing info field: #{options.uid_field}"
-        user_info.sub
-      end
-
-      info do
-        {
-          name: user_info.name,
-          email: user_info.email,
-          nickname: user_info.preferred_username,
-          first_name: user_info.given_name,
-          last_name: user_info.family_name,
-          gender: user_info.gender,
-          image: user_info.picture,
-          phone: user_info.phone_number,
-          urls: { website: user_info.website }
-        }
-      end
-
-      extra do
-        { raw_info: user_info.raw_attributes }
-      end
+      # def uid
+      #   user_info.public_send(options.uid_field.to_s)
+      # rescue NoMethodError
+      #   log :warn, "User sub:#{user_info.sub} missing info field: #{options.uid_field}"
+      #   user_info.sub
+      # end
+      #
+      # info do
+      #   {
+      #     name: user_info.name,
+      #     email: user_info.email,
+      #     nickname: user_info.preferred_username,
+      #     first_name: user_info.given_name,
+      #     last_name: user_info.family_name,
+      #     gender: user_info.gender,
+      #     image: user_info.picture,
+      #     phone: user_info.phone_number,
+      #     urls: { website: user_info.website }
+      #   }
+      # end
+      #
+      # extra do
+      #   { raw_info: user_info.raw_attributes }
+      # end
 
       credentials do
         {
@@ -152,6 +153,7 @@ module OmniAuth
           ui_locales: params['ui_locales'],
           claims_locales: params['claims_locales'],
           prompt: options.prompt,
+          resource: options.resource,
           nonce: (new_nonce if options.send_nonce),
           hd: options.hd,
         }
@@ -181,7 +183,7 @@ module OmniAuth
       end
 
       def user_info
-        @user_info ||= access_token.userinfo!
+        # @user_info ||= access_token.userinfo!
       end
 
       def access_token
